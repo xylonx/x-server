@@ -1,0 +1,7 @@
+{
+    "server": {
+        "bind_addr": "",
+        "bind_port": ,
+        "root_path": ""
+    }
+}

@@ -1,0 +1,13 @@
+# vscode related config
+.cache/
+.vscode/
+
+# cmake related
+build/
+cmake-build-debug/
+
+# test
+tcp_test/
+
+# config
+config.json

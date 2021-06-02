@@ -1,5 +1,5 @@
-#ifndef HTTPSERVER_CONN_H
-#define HTTPSERVER_CONN_H
+#ifndef X_SERVER_CONN_H
+#define X_SERVER_CONN_H
 
 #define LISTEN_Q 12
 

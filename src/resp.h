@@ -1,5 +1,5 @@
-#ifndef HTTPSERVER_RESP_H
-#define HTTPSERVER_RESP_H
+#ifndef X_SERVER_RESP_H
+#define X_SERVER_RESP_H
 
 #define DEBUG_NO_SOCKET
 

@@ -1,5 +1,5 @@
-#ifndef HTTPSERVER_CONF_H
-#define HTTPSERVER_CONF_H
+#ifndef X_SERVER_CONF_H
+#define X_SERVER_CONF_H
 
 // to control debug mode
 // #define _DEBUG_MODE

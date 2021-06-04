@@ -1,21 +1,30 @@
 #include "conf.h"
-#include "cJSON.h"
+
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+
+#include "cJSON.h"
 
 void init_conf(conf_t* conf) {
     if (conf != NULL && *conf != NULL) {
         free(*conf);
     }
 
-    conf_t conf_addr = (conf_t)malloc(sizeof(conf_t));
+    conf_t conf_addr = (conf_t)malloc(sizeof(struct _conf_t));
     *conf = conf_addr;
+    if (conf_addr == NULL) {
+        // TODO: log
+        printf("[Error] Cannot allocate\n");
+        exit(EXIT_FAILURE);
+    }
+    bzero(conf_addr, sizeof(struct _conf_t));
 
 // get env_file_path
 #ifdef _DEBUG_CONFIG_PATH
-    const char* env_file_path = _DEBUG_CONFIG_PATH; 
+    const char* env_file_path = _DEBUG_CONFIG_PATH;
 #else
     const char* env_file_path = getenv("env_file_path");
 #endif

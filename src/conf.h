@@ -19,8 +19,6 @@ extern conf_t conf;
 // path is read from env variable `env_file_path`
 void init_conf(conf_t* conf);
 
-#endif
-
 struct _conf_server_t {
     char bind_addr[16];
     int bind_port;
@@ -30,3 +28,5 @@ struct _conf_server_t {
 struct _conf_t {
     conf_server_t server;
 };
+
+#endif

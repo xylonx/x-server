@@ -23,6 +23,7 @@ struct _conf_server_t {
     char bind_addr[16];
     int bind_port;
     char root_path[256];
+    char default_index[32];
 };
 
 struct _conf_t {

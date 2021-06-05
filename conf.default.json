@@ -1,7 +1,8 @@
 {
     "server": {
         "bind_addr": "",
-        "bind_port": 8080
-        "root_path": ""
+        "bind_port": 8080,
+        "root_path": "",
+        "deafult_index": ""
     }
 }

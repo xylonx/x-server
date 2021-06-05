@@ -66,4 +66,7 @@ void init_conf(conf_t* conf) {
     item = cJSON_GetObjectItem(server, "root_path");
     memcpy(conf_addr->server.root_path, item->valuestring,
            strlen(item->valuestring));
+    item = cJSON_GetObjectItem(server, "default_index");
+    memcpy(conf_addr->server.default_index, item->valuestring,
+           strlen(item->valuestring));
 }

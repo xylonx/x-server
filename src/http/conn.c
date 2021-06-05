@@ -37,7 +37,7 @@ void epoll_wait_error_handle(int errsv) {
     }
 }
 
-void get_cli_info(const struct sockaddr* sockaddr, char* buf, int buf_size) {
+void get_cli_info(const struct sockaddr_in* sockaddr, char* buf, int buf_size) {
     struct sockaddr_in* cli_addr_in = (struct sockaddr_in*)sockaddr;
     char ipv4buf[16];
     inet_ntop(AF_INET, &cli_addr_in->sin_addr, ipv4buf, 16);
@@ -84,7 +84,7 @@ void* handle_conn_epoll(int listenfd, req_handle in_handle,
     char cli_info_buf[CLI_INFO_BUF_SIZE];
 
     // client info holder
-    struct sockaddr cli_addr[MAX_FD];
+    struct sockaddr_in cli_addr[MAX_FD];
     socklen_t cli_socklen[MAX_FD];
 
     // create epoll instance
@@ -129,9 +129,12 @@ void* handle_conn_epoll(int listenfd, req_handle in_handle,
                 get_cli_info(&cli_addr[awake_ev.data.fd], cli_info_buf,
                              CLI_INFO_BUF_SIZE);
 
-                if ((connfd = accept4(listenfd, &cli_addr[awake_ev.data.fd],
-                                      &cli_socklen[awake_ev.data.fd],
-                                      SOCK_NONBLOCK)) == -1) {
+                // FIXME: can't get client_addr
+                if ((connfd = accept4(
+                         listenfd,
+                         (struct sockaddr*)(cli_addr + awake_ev.data.fd),
+                         (cli_socklen + awake_ev.data.fd), SOCK_NONBLOCK)) ==
+                    -1) {
                     // TODO: log
                     printf(
                         "[Warning] accept connection failure. remote client "
@@ -169,9 +172,10 @@ void* handle_conn_epoll(int listenfd, req_handle in_handle,
                 if ((awake_ev.events & EPOLLRDHUP) == EPOLLRDHUP) {
                     /*** user defined abnormal connection close handle ***/
                     if (err_handle) {
-                        err_handle(awake_ev.data.fd,
-                                   &cli_addr[awake_ev.data.fd],
-                                   &cli_socklen[awake_ev.data.fd]);
+                        err_handle(
+                            awake_ev.data.fd,
+                            (struct sockaddr*)&cli_addr[awake_ev.data.fd],
+                            &cli_socklen[awake_ev.data.fd]);
                     }
 
                     // delete it from epoll list
@@ -198,7 +202,8 @@ void* handle_conn_epoll(int listenfd, req_handle in_handle,
 
                     /*** user defined tcp stream handle ***/
                     serv_verb_t* verb = (serv_verb_t*)in_handle(
-                        awake_ev.data.fd, &cli_addr[awake_ev.data.fd],
+                        awake_ev.data.fd,
+                        (struct sockaddr*)&cli_addr[awake_ev.data.fd],
                         &cli_socklen[awake_ev.data.fd]);
 
                     if (verb == NULL) {

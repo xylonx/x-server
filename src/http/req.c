@@ -11,11 +11,13 @@
 #include "conn.h"
 #include "resp.h"
 
-regex_t method_reg, conn_reg;
+regex_t method_reg, conn_reg, header_reg;
 const char* method_reg_pattern = "^(\\w+)\\s+(.+)\\s+HTTP.+\r$";
 const size_t method_reg_nmatch = 3;
 const char* conn_reg_pattern = "^Connection: (.+)\r$";
 const size_t conn_reg_nmatch = 2;
+const char* header_reg_pattern = "^.+:\\s+.+\r$";
+const size_t header_reg_nmatch = 1;
 
 const serv_verb_t close_verb = VERB_CLOSE_CONN;
 
@@ -25,6 +27,11 @@ const serv_verb_t close_verb = VERB_CLOSE_CONN;
 int get_line(const char* buf, unsigned long buffer_size);
 int start_at(const char* str, const char* pattern);
 void init_regex();
+
+void* get_hadle(int connfd);
+void* post_handle(int connfd);
+void* delete_handle(int connfd);
+void file_error_handle(int connfd, int err);
 
 void init_router_handle() { init_regex(); }
 
@@ -47,6 +54,7 @@ void* http_req_handle(int connfd, struct sockaddr* cli_addr,
 
     http_method_t method;
     http_conn_status_t status = CONN_CLOSE;
+    int is_req_broken = 0;
 
     // read bytes from connfd
     while ((read_byte = read(connfd, buffer, READ_BUFFER_SIZE)) != -1) {
@@ -64,9 +72,9 @@ void* http_req_handle(int connfd, struct sockaddr* cli_addr,
                 regmatch_t pmatch[method_reg_nmatch];
                 if (regexec(&method_reg, cursor, method_reg_nmatch, pmatch, 0) <
                     0) {
-                    // TODO:log
-                    printf("[Warning] get method and uri by regex error.\n");
-                    continue;
+                    // request is broken
+                    is_req_broken = 1;
+                    break;
                 }
 
                 // get method
@@ -84,9 +92,21 @@ void* http_req_handle(int connfd, struct sockaddr* cli_addr,
                 // get uri
                 strncpy(uri_sp, cursor + pmatch[2].rm_so,
                         pmatch[2].rm_eo - pmatch[2].rm_so);
+                uri_sp += pmatch[2].rm_eo - pmatch[2].rm_so;
+                if (*(uri_sp - 1) == '/') {
+                    // set default file end
+                    strncpy(uri_sp, conf->server.default_index,
+                            strlen(conf->server.default_index));
+                }
             }
             // handle header
             else {
+                regmatch_t header_match[1];
+                if (cursor < body_position - 4 &&
+                    regexec(&header_reg, cursor, 1, header_match, 0) < 0) {
+                    is_req_broken = 1;
+                    break;
+                }
                 // handle Connection header
                 if (start_at(cursor, "Connection:")) {
                     regmatch_t pmatch[2];
@@ -108,6 +128,11 @@ void* http_req_handle(int connfd, struct sockaddr* cli_addr,
             cursor += line_offset;
         }
 
+        if (is_req_broken) {
+            msg_bad_request(connfd, NULL, NULL);
+            return (void*)&close_verb;
+        }
+
         /*** return message ***/
         void* rtn = status == CONN_KA ? NULL : (void*)&close_verb;
 
@@ -121,33 +146,68 @@ void* http_req_handle(int connfd, struct sockaddr* cli_addr,
                 file = fopen(uri_buffer, "r");
                 // File does not exist or does not contain read permission.
                 if (file == NULL) {
-                    switch (errno) {
-                        case ENOENT:
-                            msg_not_found(connfd, NULL, NULL);
-                            return rtn;
-
-                        // FIXME: for big file. set http header
-                        // Transfer-Encoding: chunked and omit Conntent-Length
-                        case EPERM:
-                            msg_forbidden(connfd, NULL, NULL);
-                            return rtn;
-                    }
+                    int err = errno;
+                    file_error_handle(connfd, err);
+                    return rtn;
                 }
 
                 // FIXME: can't solve big file.
                 fread(body_buffer, sizeof(char), BODY_BUFFER_SIZE, file);
+                fclose(file);
                 msg_ok(connfd, NULL, body_buffer);
                 break;
+
+            case METHOD_POST:
+                file = fopen(uri_buffer, "w");
+                if (file == NULL) {
+                    int err = errno;
+                    file_error_handle(connfd, err);
+                    return rtn;
+                }
+
+                fwrite(body_position, sizeof(char), strlen(body_position),
+                       file);
+                fclose(file);
+                msg_ok(connfd, NULL, NULL);
+                break;
+
+            case METHOD_DELETE:
+                if (remove(uri_buffer) < 0) {
+                    // TODO: log
+                    printf("[Info] Delete file %s error.", uri_buffer);
+                    int err = errno;
+                    file_error_handle(connfd, err);
+                    return rtn;
+                }
+                msg_ok(connfd, NULL, NULL);
+                break;
         }
-        fclose(file);
     }
 
     return NULL;
 }
 
+void file_error_handle(int connfd, int err) {
+    switch (err) {
+        case ENOENT:
+            msg_not_found(connfd, NULL, NULL);
+            return;
+
+        // FIXME: for big file. set http header
+        // Transfer-Encoding: chunked and omit Conntent-Length
+        case EPERM:
+            msg_forbidden(connfd, NULL, NULL);
+            return;
+
+        default:
+            msg_internal_server_error(connfd, NULL, NULL);
+    }
+}
+
 void init_regex() {
     regcomp(&method_reg, method_reg_pattern, REG_EXTENDED | REG_NEWLINE);
     regcomp(&conn_reg, conn_reg_pattern, REG_EXTENDED | REG_NEWLINE);
+    regcomp(&header_reg, header_reg_pattern, REG_EXTENDED | REG_NEWLINE);
 }
 
 int get_line(const char* buf, unsigned long buffer_size) {

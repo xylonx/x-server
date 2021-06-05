@@ -1,12 +1,11 @@
 #include "conf.h"
 
+#include <cjson/cJSON.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
-
-#include "cJSON.h"
 
 void init_conf(conf_t* conf) {
     if (conf != NULL && *conf != NULL) {

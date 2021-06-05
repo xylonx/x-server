@@ -2,10 +2,10 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "conf.h"
-#include "conn.h"
-#include "req.h"
-#include "resp.h"
+#include "conf/conf.h"
+#include "http/conn.h"
+#include "http/req.h"
+#include "http/resp.h"
 
 conf_t conf;
 

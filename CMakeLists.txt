@@ -5,6 +5,7 @@ set(CMAKE_C_STANDARD 11)
 # message(STATUS ${CMAKE_SOURCE_DIR})
 
 # set source file directory
-aux_source_directory(${CMAKE_SOURCE_DIR}/src sourceList)
+# aux_source_directory(${CMAKE_SOURCE_DIR}/src sourceList)
 
-add_executable(x-server ${sourceList})
+# add_executable(x-server ${sourceList})
+add_subdirectory(src)

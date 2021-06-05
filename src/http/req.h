@@ -4,7 +4,7 @@
 
 #include <sys/socket.h>
 
-#include "conf.h"
+#include "../conf/conf.h"
 
 #define READ_BUFFER_SIZE 65536
 #define URI_BUFFER_SIZE 256

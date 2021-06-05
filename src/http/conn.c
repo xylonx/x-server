@@ -13,7 +13,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "conf.h"
+#include "../conf/conf.h"
 // #include "ctrl.h"
 
 void epoll_wait_error_handle(int errsv) {

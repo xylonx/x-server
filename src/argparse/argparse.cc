@@ -17,13 +17,64 @@
 
 #include "argparse.h"
 
-#include <string>
+#include <cstdlib>
+#include <functional>
 
-OptParse::OptParse(){};
+namespace xserver {
 
-// impl OptParse::add_option method
-template <typename T>
-void OptParse::add_option(const char *opt, const char *short_opt, T *target, T default_value){};
+OptParse::OptParse() { root_ = new TrieNode(); };
 
-// impl OptParse::parse method
-void OptParse::parse(const char **opt){};
+OptParse::~OptParse() { DestroyTrieTree(root_); }
+
+void OptParse::InsertToTrie(const char* key, const std::function<void(char*)>* assign) {
+    InsertToTrie(key, assign, nullptr);
+};
+
+// TODO(xylonx): impl
+void OptParse::InsertToTrie(const char* key, const std::function<void(char*)>* assign,
+                            const std::function<void()>* set_defaults){
+
+};
+
+// TODO(xylonx): impl
+void OptParse::FindLongestMatch(const char* argv) {}
+
+void OptParse::DestroyTrieTree(struct TrieNode* root) {
+    if (root != nullptr) {
+        for (auto node : root->next_) {
+            DestroyTrieTree(node);
+        }
+        delete root->set_;
+        delete root->set_default_;
+        delete root;
+    }
+}
+
+void OptParse::AddOption(const char* opt, int* target) {
+    if (opt != nullptr && target != nullptr) {
+        auto assign = new std::function<void(char*)>([target](const char* value) { *target = atoi(value); });
+        InsertToTrie(opt, assign);
+    }
+}
+
+void OptParse::AddOption(const char* opt, int* target, int defaults) {
+    if (opt != nullptr && target != nullptr) {
+        auto assign       = new std::function<void(char*)>([target](const char* value) { *target = atoi(value); });
+        auto set_defaults = new std::function<void()>([target, defaults]() { *target = defaults; });
+        InsertToTrie(opt, assign, set_defaults);
+    }
+};
+
+// TODO(xylonx): impl
+void OptParse::AddOption(const char* opt, bool* target, bool defaults) {}
+
+// TODO(xylonx): impl
+void OptParse::AddOption(const char* opt, char* target, size_t len) {}
+
+// TODO(xylonx): impl
+void OptParse::AddOption(const char* opt, char* target, size_t len, const char* defaults) {}
+
+// TODO(xylonx): impl
+void OptParse::Parse(int argc, const char** argv) {}
+
+}  // namespace xserver

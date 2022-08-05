@@ -19,4 +19,4 @@ set(
     argparse.cc
 )
 
-add_library(argparse SHARED ${argparse_source})
+add_library(argparse ${argparse_source})

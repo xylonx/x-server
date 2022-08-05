@@ -15,8 +15,10 @@
 # 
 
 add_subdirectory(argparse)
+add_subdirectory(http)
 
 add_executable(${PROJECT_NAME} main.cc)
 
 target_link_libraries(${PROJECT_NAME} spdlog)
 target_link_libraries(${PROJECT_NAME} argparse)
+target_link_libraries(${PROJECT_NAME} http)

@@ -19,7 +19,6 @@
 
 #include "argparse.h"
 #include "except.h"
-#include "globals.h"
 #include "http/server.h"
 #include "spdlog/spdlog.h"
 

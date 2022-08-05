@@ -14,8 +14,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 # 
 
-enable_testing()
-
 add_executable(
     argparse_test
     argparse_test.cc

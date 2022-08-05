@@ -1,6 +1,5 @@
 # vscode related config
 .cache/
-.vscode/
 
 # cmake related
 build/

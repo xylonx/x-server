@@ -12,11 +12,6 @@
 # 
 # You should have received a copy of the GNU General Public License 
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-# 
 
-add_subdirectory(argparse)
-
-add_executable(${PROJECT_NAME} main.cc)
-
-target_link_libraries(${PROJECT_NAME} spdlog)
-target_link_libraries(${PROJECT_NAME} argparse)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)

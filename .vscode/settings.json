@@ -1,0 +1,26 @@
+{
+    "cmake.configureSettings": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "1"
+        //   "WITH_EPOLL": "1"
+    },
+    "cmake.default.generator": "Unix Makefiles",
+    "cmake.buildDirectory": "${workspaceFolder}/build/",
+    // "cmake.copyCompileCommands": "${workspaceFolder}/build/compile_commands.json",
+    "clangd.onConfigChanged": "restart",
+    "clangd.arguments": [
+        "--background-index",
+        "--compile-commands-dir=/build",
+        "-j=8",
+        "--cross-file-rename",
+        "--suggest-missing-includes",
+        "--all-scopes-completion",
+        "--completion-style=detailed",
+        "--header-insertion=iwyu",
+        "--pch-storage=memory"
+    ],
+    "C_Cpp.autocomplete": "Disabled",
+    "C_Cpp.codeAnalysis.clangTidy.enabled": false,
+    "C_Cpp.vcpkg.enabled": false,
+    "C_Cpp.codeFolding": "Enabled",
+    "lldb.verboseLogging": true
+}

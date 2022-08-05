@@ -1,8 +1,11 @@
-#基础样式
-BasedOnStyle: Google
-#指针的*的挨着哪边
-PointerAlignment: Right
-#访问修饰符前的空格
-AccessModifierOffset: -4
-# 缩进宽度
 IndentWidth: 4
+BasedOnStyle: google
+ColumnLimit: 120
+AccessModifierOffset: -4
+AlignConsecutiveAssignments: true
+SortIncludes: true
+SortUsingDeclarations: true
+AlignTrailingComments: true
+AllowShortCaseLabelsOnASingleLine: true
+AlignArrayOfStructures: Left
+AllowAllParametersOfDeclarationOnNextLine: true

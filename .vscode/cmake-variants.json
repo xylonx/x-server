@@ -1,0 +1,43 @@
+{
+    "buildOpt": {
+        "default": "epoll",
+        "description": "build with blocking / non-blocking",
+        "choices": {
+            "epoll": {
+                "short": "epoll",
+                "long": "no blocking with epoll api",
+                "settings": {
+                    "WITH_EPOLL": "1"
+                }
+            }
+        }
+    },
+    "buildTarget": {
+        "default": "no-thread",
+        "description": "build with thead model",
+        "choices": {
+            "no-thread": {
+                "short": "no-thread",
+                "long": "do not use thread for every connection",
+                "buildType": "RelWithDebInfo",
+                "settings": {
+                    "CMAKE_CXX_FLAGS": ""
+                }
+            },
+            "threads": {
+                "short": "use-thread",
+                "long": "use thread for every connection",
+                "settings": {
+                    "CMAKE_CXX_FLAGS": "-DWITH_THREAD"
+                }
+            },
+            "thread-pool": {
+                "short": "thread_pool",
+                "long": "use thread for every connection with thread pool",
+                "settings": {
+                    "CMAKE_CXX_FLAGS": "-DWITH_THREAD_POLL"
+                }
+            }
+        }
+    }
+}

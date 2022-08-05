@@ -12,11 +12,14 @@
 # 
 # You should have received a copy of the GNU General Public License 
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-# 
 
-add_subdirectory(argparse)
+# load spdlog
+add_subdirectory(spdlog)
+include_directories(spdlog/include)
+find_package(spdlog PATHS ${PROJECT_SOURCE_DIR}/cmake/spdlogConfig.cmake)
 
-add_executable(${PROJECT_NAME} main.cc)
-
-target_link_libraries(${PROJECT_NAME} spdlog)
-target_link_libraries(${PROJECT_NAME} argparse)
+# load gtest
+add_subdirectory(googletest)
+include_directories(googletest/googletest/include)
+include_directories(googletest/googlemock/include)
+find_package(googletest PATHS ${PROJECT_SOURCE_DIR}/cmake/googletestConfig.cmake)

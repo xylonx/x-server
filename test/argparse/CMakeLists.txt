@@ -14,9 +14,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 # 
 
-add_subdirectory(argparse)
+enable_testing()
 
-add_executable(${PROJECT_NAME} main.cc)
+add_executable(
+    argparse_test
+    argparse_test.cc
+)
+target_link_libraries(
+    argparse_test
+    GTest::gtest_main
+)
 
-target_link_libraries(${PROJECT_NAME} spdlog)
-target_link_libraries(${PROJECT_NAME} argparse)
+include(GoogleTest)
+gtest_discover_tests(argparse_test)

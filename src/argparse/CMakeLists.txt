@@ -14,9 +14,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 # 
 
-add_subdirectory(argparse)
+set(
+    argparse_source
+    argparse.cc
+)
 
-add_executable(${PROJECT_NAME} main.cc)
-
-target_link_libraries(${PROJECT_NAME} spdlog)
-target_link_libraries(${PROJECT_NAME} argparse)
+add_library(argparse SHARED ${argparse_source})

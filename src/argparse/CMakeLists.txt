@@ -20,3 +20,5 @@ set(
 )
 
 add_library(argparse ${argparse_source})
+
+target_link_libraries(argparse spdlog)

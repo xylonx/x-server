@@ -74,14 +74,14 @@ public:
 private:
     struct TrieNode {
         std::function<void(const char*)>* set_;  // value assign function
-        std::function<void()>* set_default_;     // value assign function
-        struct TrieNode* next_[27];              // magic number means 26+1 (a-z_)
+        bool is_flag_;
+        struct TrieNode* next_[27];  // magic number means 26+1 (a-z_)
+
+        TrieNode() = default;
     };
 
-    void InsertToTrie(const char* key, const std::function<void(char*)>* assign);
-    void InsertToTrie(const char* key, const std::function<void(char*)>* assign,
-                      const std::function<void()>* set_defaults);
-    void FindLongestMatch(const char* argv);
+    void InsertToTrie(const char* key, std::function<void(const char*)>* assign, bool is_flag = false);
+    TrieNode* FindLongestMatch(const char* argv);
     void DestroyTrieTree(TrieNode* root);
 
     TrieNode* root_;

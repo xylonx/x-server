@@ -15,12 +15,30 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "argparse.h"
+
+#include <string>
+
+#include "globals.h"
 #include "gtest/gtest.h"
+#include "spdlog/spdlog.h"
 
 // Demonstrate some basic assertions.
-TEST(OptParseTest, BasicAssertions) {
-    // Expect two strings not to be equal.
-    EXPECT_STRNE("hello", "world");
-    // Expect equality.
-    EXPECT_EQ(7 * 6, 42);
+TEST(OptParseStringParseTest, BasicAssertions) {
+    char addr[16]      = {0};
+    char address[4096] = {0};
+
+    xserver::OptParse parser;
+    parser.AddOption("addr", addr, 16, "0.0.0.0");
+    parser.AddOption("address", address, 4096, "./");
+
+    int argc           = 12;
+    const char* data[] = {
+        "--addr",
+        "192.168.1.1",
+    };
+    parser.Parse(argc, reinterpret_cast<const char**>(data));
+
+    EXPECT_EQ(std::string(addr), "192.168.1.1");
+    EXPECT_EQ(std::string(address), "./");
 }

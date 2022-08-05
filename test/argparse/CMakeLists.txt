@@ -23,6 +23,8 @@ add_executable(
 target_link_libraries(
     argparse_test
     GTest::gtest_main
+    spdlog
+    argparse
 )
 
 include(GoogleTest)

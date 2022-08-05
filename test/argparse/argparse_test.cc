@@ -19,7 +19,6 @@
 
 #include <string>
 
-#include "globals.h"
 #include "gtest/gtest.h"
 #include "spdlog/spdlog.h"
 
@@ -32,7 +31,7 @@ TEST(OptParseStringParseTest, BasicAssertions) {
     parser.AddOption("addr", addr, 16, "0.0.0.0");
     parser.AddOption("address", address, 4096, "./");
 
-    int argc           = 12;
+    int argc           = 2;
     const char* data[] = {
         "--addr",
         "192.168.1.1",
@@ -41,4 +40,38 @@ TEST(OptParseStringParseTest, BasicAssertions) {
 
     EXPECT_EQ(std::string(addr), "192.168.1.1");
     EXPECT_EQ(std::string(address), "./");
+}
+
+TEST(OptParseIntParseTest, BasicAssertions) {
+    int port;
+    int pp;
+    xserver::OptParse parser;
+    parser.AddOption("port", &port);
+    parser.AddOption("pp", &pp, 5555);
+    int argc           = 2;
+    const char* data[] = {
+        "--port",
+        "12",
+    };
+    parser.Parse(argc, reinterpret_cast<const char**>(data));
+
+    EXPECT_EQ(port, 12);
+    EXPECT_EQ(pp, 5555);
+}
+
+TEST(OptParseBoolParseTest, BasicAssertions) {
+    bool b1 = false;
+    bool b2 = true;
+
+    xserver::OptParse parser;
+    parser.AddOption("b", &b1);
+    parser.AddOption("bb", &b2);
+    int argc           = 2;
+    const char* data[] = {
+        "--b",
+    };
+    parser.Parse(argc, reinterpret_cast<const char**>(data));
+
+    EXPECT_EQ(b1, true);
+    EXPECT_EQ(b2, false);
 }

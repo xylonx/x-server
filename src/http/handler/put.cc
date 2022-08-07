@@ -15,31 +15,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "http/handler/get.h"
-
-#include <unistd.h>
-
-#include <cstring>
-#include <string>
-
-#include "except.h"
-#include "spdlog/spdlog.h"
+#include "http/handler/put.h"
 
 namespace xserver {
 
-GETHandler::~GETHandler() = default;
+PUTHandler::~PUTHandler() = default;
 
-void GETHandler::Handle() {
-    // TODO(xylonx): below codes are just used for read POC. It should be change to read impl
-    int read_bytes = 0;
-    const char* x  = conn_->Read(&read_bytes);
-    if (read_bytes < 0) {
-        throw XServerExcept(fmt::format("read from conn failed: {}", std::strerror(errno)));
-    }
+// TODO(xylonx): impl
+void PUTHandler::Handle() {}
 
-    spdlog::info("read from conn: {}", x);
-}
-
-void GETHandler::Response() {}
+void PUTHandler::Response() {}
 
 }  // namespace xserver

@@ -24,11 +24,15 @@ namespace xserver {
 
 class GETHandler : public Handler {
 public:
-    explicit GETHandler(const char *url) : Handler(url){};
+    GETHandler(Conn* conn, const char* url) : Handler(conn, url) {}
+
+    ~GETHandler() override;
 
     void Handle() override;
 
-    bool Response() override;
+    void Response() override;
+
+private:
 };
 
 }  // namespace xserver

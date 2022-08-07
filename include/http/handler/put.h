@@ -25,11 +25,13 @@ namespace xserver {
 
 class PUTHandler : public Handler {
 public:
-    explicit PUTHandler(const char *url) : Handler(url){};
+    PUTHandler(Conn* conn, const char* url) : Handler(conn, url) {}
+
+    ~PUTHandler() override;
 
     void Handle() override;
 
-    bool Response() override;
+    void Response() override;
 };
 
 }  // namespace xserver

@@ -25,11 +25,13 @@ namespace xserver {
 
 class POSTHandler : public Handler {
 public:
-    explicit POSTHandler(const char *url) : Handler(url){};
+    POSTHandler(Conn* conn, const char* url) : Handler(conn, url) {}
+
+    ~POSTHandler() override;
 
     void Handle() override;
 
-    bool Response() override;
+    void Response() override;
 };
 
 }  // namespace xserver

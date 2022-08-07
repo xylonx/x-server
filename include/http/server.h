@@ -18,11 +18,26 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <string>
+#include <netinet/in.h>
+
+#include "config.h"
+#include "const.h"
+#include "http/request.h"
+
 namespace xserver {
 
 class HTTPServer {
 public:
+    HTTPServer();
+
+    ~HTTPServer() {
+        delete cli_addr_;
+        delete cli_socklen_;
+        for (auto &request : requests_) {
+            delete request;
+        }
+    };
+
     /**
      * @brief listen and serve http server at given addr:port, with root and index option
      *
@@ -35,6 +50,10 @@ public:
     void Serve(const char *addr, int port, const char *root, const char *index);
 
 private:
+    Request *requests_[kMAX_FD];
+    struct sockaddr_in *cli_addr_;
+    socklen_t *cli_socklen_;
+
     /**
      * @brief create a socket and listen
      *
@@ -43,6 +62,10 @@ private:
      * @return int listen fd
      */
     int ListenAndBind(const char *addr, int port);
+
+    void HandleConnIn(int conn);
+
+    void HandleConnClientClose(int conn);
 };
 
 }  // namespace xserver

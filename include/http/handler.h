@@ -18,18 +18,31 @@
 #ifndef HANDLER_H
 #define HANDLER_H
 
+#include "http/conn.h"
+
 namespace xserver {
 
 class Handler {
 public:
-    explicit Handler(const char* url) : url_(url) {}
+    Handler(Conn* conn, const char* url) : conn_(conn), url_(url) {}
+
+    virtual ~Handler() = default;
 
     virtual void Handle() = 0;
 
-    virtual bool Response() = 0;
+    virtual void Response() = 0;
+
+protected:
+    Conn* conn_;
+    const char* url_;
 
 private:
-    const char* url_;
+    /**
+     * @brief Parse tons of headers, especially for header `Connection`, which whether or not keeping the tcp connection
+     * depends on
+     *
+     */
+    void ParseHeader();
 };
 
 }  // namespace xserver

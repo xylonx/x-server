@@ -25,11 +25,13 @@ namespace xserver {
 
 class DELETEHandler : public Handler {
 public:
-    explicit DELETEHandler(const char *url) : Handler(url){};
+    DELETEHandler(Conn* conn, const char* url) : Handler(conn, url) {}
+
+    ~DELETEHandler() override;
 
     void Handle() override;
 
-    bool Response() override;
+    void Response() override;
 };
 
 }  // namespace xserver

@@ -14,8 +14,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 # 
 
-enable_testing()
+add_executable(
+    http_test
+    conn_test.cc
+)
+target_link_libraries(
+    http_test
+    GTest::gtest_main
+    spdlog
+    http
+)
 
-# add test case 
-add_subdirectory(argparse)
-add_subdirectory(http)
+include(GoogleTest)
+gtest_discover_tests(http_test)

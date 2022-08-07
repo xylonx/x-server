@@ -36,14 +36,6 @@ inline std::string ToString(HTTPMethod method) {
     }
 }
 
-class RequestException : public XServerExcept {
-public:
-    explicit RequestException(HTTPMethod method, const std::string& uri, const std::string& remote_addr,
-                              const std::string& hint) {
-        message_ = fmt::format("{} {} remote: {} hint: {}", method, uri, remote_addr, hint);
-    };
-};
-
 }  // namespace xserver
 
 #endif /* HTTP_COMMON_H */

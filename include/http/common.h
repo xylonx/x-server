@@ -18,16 +18,16 @@
 #ifndef HTTP_COMMON_H
 #define HTTP_COMMON_H
 
-#include <sstream>
 #include <string>
 
 #include "except.h"
+#include "spdlog/spdlog.h"
 
 namespace xserver {
 
 enum HTTPMethod { kGET = 0, kPOST, kPUT, kDELETE };
 
-std::string ToString(HTTPMethod method) {
+inline std::string ToString(HTTPMethod method) {
     switch (method) {
         case kGET: return "GET";
         case kPOST: return "POST";
@@ -40,10 +40,7 @@ class RequestException : public XServerExcept {
 public:
     explicit RequestException(HTTPMethod method, const std::string& uri, const std::string& remote_addr,
                               const std::string& hint) {
-        std::ostringstream msg;
-        msg << ToString(method) << " " << uri << " "
-            << "remote: " << remote_addr << " " << hint;
-        message_ = msg.str();
+        message_ = fmt::format("{} {} remote: {} hint: {}", method, uri, remote_addr, hint);
     };
 };
 

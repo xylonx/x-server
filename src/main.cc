@@ -22,18 +22,35 @@
 #include "http/server.h"
 #include "spdlog/spdlog.h"
 
+namespace xserver {
+int listen_buffer_size = 32;
+#ifndef WITHOUT_MULTIPLEXING
+int multiplex_wait_nsec  = 20;
+int multiplex_max_events = 100;
+#endif /* end WITHOUT_MULTIPLEXING */
+
+int read_buffer_size;
+int write_buffer_size;
+
+}  // namespace xserver
+
 int main(int argc, char const* argv[]) {
     char addr[16]   = {0};
     char root[4096] = {0};
     char index[16]  = {0};
     int port        = 0;
 
+    xserver::read_buffer_size = 0;
+
     xserver::OptParse parser;
     parser.AddOption("addr", addr, 16, "0.0.0.0");
     parser.AddOption("port", &port, 7788);
     parser.AddOption("root", root, 4096, ".");
     parser.AddOption("index", index, 16, "");
-    parser.Parse(argc, argv);
+    parser.AddOption("read_buf_size", &xserver::read_buffer_size, 1024);
+    parser.AddOption("read_buf_size", &xserver::write_buffer_size, 1024);
+    // ignore argv[0], which is binary file path
+    parser.Parse(argc - 1, argv + 1);
 
     xserver::HTTPServer server;
     try {

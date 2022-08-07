@@ -17,16 +17,50 @@
 set(
     handler_source
     handler/get.cc
+    handler/post.cc
+    handler/put.cc
+    handler/delete.cc
 )
 
 add_library(handler ${handler_source})
+target_link_libraries(handler spdlog)
 
 set(
     http_source
+    conn.cc
     request.cc
     server.cc
 )
 
+if(WITHOUT_MULTIPLEXING)
+    set(
+        http_source
+        ${http_source}
+        server_serially.cc
+    )
+else()
+    if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+        set(
+            http_source
+            ${http_source}
+            server_epoll.cc
+        )
+    elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+        set(
+            http_source
+            ${http_source}
+            server_kqueue.cc
+        )
+    else()
+        set(
+            http_source
+            ${http_source}
+            server_select.cc
+        )
+    endif()
+endif()
+
 add_library(http ${http_source})
 
 target_link_libraries(http handler)
+target_link_libraries(http spdlog)

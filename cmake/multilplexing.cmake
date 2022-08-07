@@ -14,17 +14,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 # 
 
-cmake_minimum_required(VERSION 3.17)
-project(x-server CXX)
-set(CMAKE_CXX_STANDARD 17)
-
-include(cmake/multilplexing.cmake)
-
-configure_file(config.h.cmake ${CMAKE_BINARY_DIR}/include/config.h)
-
-include_directories(${CMAKE_BINARY_DIR}/include)
-include_directories(include)
-
-add_subdirectory(lib)
-add_subdirectory(src)
-add_subdirectory(test)
+if(WITHOUT_MULTIPLEXING)
+    message("WITHOUT_MULTIPLEXING defined. server will handle requests serially")
+else()
+    if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+        message("Current OS is Linux. USE epoll")
+        set(WITH_EPOLL 1)
+    elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+        message("Current OS is Darwin. USE kqueue")
+        SET(WITH_KQUEUE 1)
+    else()
+        message("USE select")
+        SET(WITH_SELECT 1)
+    endif()
+endif()

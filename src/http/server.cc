@@ -18,21 +18,21 @@
 #include "http/server.h"
 
 #include <arpa/inet.h>
-#include <sys/socket.h>
+#include <sys/errno.h>
 
 #include <cerrno>
 #include <cstring>
 
 #include "except.h"
+#include "globals.h"
+#include "spdlog/spdlog.h"
 
 namespace xserver {
-
-void HTTPServer::Serve(const char *addr, int port, const char *root, const char *index) {}
 
 int HTTPServer::ListenAndBind(const char *addr, int port) {
     int listen_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (listen_fd < 0) {
-        throw XServerExcept(std::string("create socket failed ") + std::strerror(errno));
+        throw XServerExcept(fmt::format("create socket failed: {}", std::strerror(errno)));
     }
 
     struct sockaddr_in sockaddr;
@@ -42,15 +42,24 @@ int HTTPServer::ListenAndBind(const char *addr, int port) {
     sockaddr.sin_port = htons(port);
 
     if (bind(listen_fd, reinterpret_cast<struct sockaddr *>(&sockaddr), sizeof(sockaddr)) < 0) {
-        throw XServerExcept(std::string("bind socket failed ") + std::strerror(errno));
+        throw XServerExcept(fmt::format("bind socket failed: {}", std::strerror(errno)));
     }
 
-    // TODO(xylonx): control listen buffer size dynamically
-    if (listen(listen_fd, 5) < 0) {
-        throw XServerExcept(std::string("listen socket failed ") + std::strerror(errno));
+    if (listen(listen_fd, listen_buffer_size) < 0) {
+        throw XServerExcept(fmt::format("listen socket failed: {}", std::strerror(errno)));
     }
 
     return listen_fd;
 };
+
+void HTTPServer::HandleConnIn(int conn) {
+    // TODO(xylonx): use thread or even coroutine for each operation for higher performance
+    requests_[conn]->Receive();
+    requests_[conn]->Response();
+}
+
+void HTTPServer::HandleConnClientClose(int conn) {
+    throw XServerExcept(fmt::format("unexpected client close: {}", std::strerror(errno)));
+}
 
 }  // namespace xserver

@@ -58,8 +58,6 @@ void HTTPServer::HandleConnIn(int conn) {
     requests_[conn]->Response();
 }
 
-void HTTPServer::HandleConnClientClose(int conn) {
-    throw XServerExcept(fmt::format("unexpected client close: {}", std::strerror(errno)));
-}
+void HTTPServer::HandleConnClientClose(int conn) { throw XServerExcept(fmt::format("unexpected client close")); }
 
 }  // namespace xserver

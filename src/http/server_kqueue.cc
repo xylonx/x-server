@@ -63,7 +63,7 @@ void HTTPServer::Serve(const char *addr, int port, const char *root, const char 
     while (true) {
         int ready_num = kevent(kq_fd, nullptr, 0, events, multiplex_max_events, &duration);  // 添加
         if (ready_num < 0) {
-            spdlog::warn("kevent get read fd failed: {} {}", ready_num, std::strerror(errno));
+            spdlog::warn("kevent get ready fd failed: {} {}", ready_num, std::strerror(errno));
             continue;
         }
         if (ready_num == 0) {
